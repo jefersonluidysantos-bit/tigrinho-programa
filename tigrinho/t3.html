@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Fortune Tiger Demo</title>
+
+<style>
+
+body{
+background:#0b0b0b;
+font-family:Arial;
+text-align:center;
+color:white;
+overflow:hidden;
+}
+
+h1{
+color:gold;
+text-shadow:0 0 15px gold;
+}
+
+#slot{
+display:grid;
+grid-template-columns:repeat(3,110px);
+gap:10px;
+justify-content:center;
+margin:30px;
+}
+
+.cell{
+width:110px;
+height:110px;
+background:#1a1a1a;
+border:3px solid gold;
+border-radius:10px;
+font-size:55px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 0 10px gold inset;
+transition:0.3s;
+}
+
+.win{
+animation:glow 0.5s infinite;
+}
+
+@keyframes glow{
+0%{box-shadow:0 0 10px yellow}
+50%{box-shadow:0 0 40px gold}
+100%{box-shadow:0 0 10px yellow}
+}
+
+button{
+padding:12px 25px;
+font-size:18px;
+background:gold;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+}
+
+button:hover{
+background:orange;
+}
+
+.panel{
+margin:10px;
+font-size:20px;
+}
+
+/* raio */
+
+.lightning{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+background:radial-gradient(circle,rgba(255,255,255,0.9),transparent 60%);
+animation:flash 0.2s;
+}
+
+@keyframes flash{
+0%{opacity:1}
+100%{opacity:0}
+}
+
+/* tremor */
+
+.shake{
+animation:shake 0.4s;
+}
+
+@keyframes shake{
+0%{transform:translate(0)}
+25%{transform:translate(5px)}
+50%{transform:translate(-5px)}
+75%{transform:translate(5px)}
+100%{transform:translate(0)}
+}
+
+.coin{
+position:fixed;
+font-size:22px;
+top:-20px;
+animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+to{
+transform:translateY(110vh);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🐯 Fortune Tiger Demo</h1>
+
+<div class="panel">Saldo: R$ <span id="saldo">1000</span></div>
+
+<div class="panel">
+Aposta
+<button onclick="betDown()">-</button>
+<span id="bet">10</span>
+<button onclick="betUp()">+</button>
+</div>
+
+<div id="slot">
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+</div>
+
+<button onclick="spin()">🎰 GIRAR</button>
+
+<div class="panel" id="msg"></div>
+
+<script>
+
+let saldo = 1000
+let aposta = 10
+
+const symbols = ["🐯","💰","🍀","👑","⭐"]
+
+function atualizar(){
+saldoEl.innerText = saldo
+betEl.innerText = aposta
+}
+
+const saldoEl=document.getElementById("saldo")
+const betEl=document.getElementById("bet")
+
+function betUp(){
+aposta+=5
+atualizar()
+}
+
+function betDown(){
+if(aposta>5) aposta-=5
+atualizar()
+}
+
+function spin(){
+
+if(saldo < aposta){
+alert("Saldo insuficiente")
+return
+}
+
+saldo -= aposta
+
+let cells=document.querySelectorAll(".cell")
+let results=[]
+
+cells.forEach(c=>{
+let sym=symbols[Math.floor(Math.random()*symbols.length)]
+c.textContent=sym
+c.classList.remove("win")
+results.push(sym)
+})
+
+checkWin(results)
+
+atualizar()
+
+}
+
+function checkWin(r){
+
+let ganhou=false
+
+if(r[0]==r[1] && r[1]==r[2]) ganhou=true
+if(r[3]==r[4] && r[4]==r[5]) ganhou=true
+if(r[6]==r[7] && r[7]==r[8]) ganhou=true
+
+if(ganhou){
+
+let premio=aposta*5
+saldo+=premio
+
+document.getElementById("msg").innerHTML="⚡ JACKPOT R$ "+premio
+
+document.querySelectorAll(".cell").forEach(c=>c.classList.add("win"))
+
+efeitos()
+
+}else{
+
+document.getElementById("msg").innerHTML="❌ Não ganhou"
+
+}
+
+}
+
+function efeitos(){
+
+/* raio */
+
+for(let i=0;i<5;i++){
+
+setTimeout(()=>{
+
+let flash=document.createElement("div")
+flash.className="lightning"
+document.body.appendChild(flash)
+
+setTimeout(()=>flash.remove(),200)
+
+},i*200)
+
+}
+
+/* tremor */
+
+document.body.classList.add("shake")
+setTimeout(()=>document.body.classList.remove("shake"),400)
+
+/* moedas */
+
+for(let i=0;i<40;i++){
+
+let coin=document.createElement("div")
+coin.className="coin"
+coin.innerHTML="💰"
+
+coin.style.left=Math.random()*100+"%"
+
+document.body.appendChild(coin)
+
+setTimeout(()=>coin.remove(),3000)
+
+}
+
+}
+
+atualizar()
+
+</script>
+
+</body>
+</html>

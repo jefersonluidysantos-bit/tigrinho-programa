@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Fortune Tiger Mini</title>
+
+<style>
+
+body{
+    background: radial-gradient(circle,#3b0000,#000);
+    font-family: Arial;
+    text-align:center;
+    color:white;
+}
+
+h1{
+    color:gold;
+    text-shadow:0 0 10px gold;
+}
+
+#credits{
+    font-size:24px;
+    margin:10px;
+}
+
+#slot{
+    display:grid;
+    grid-template-columns: repeat(3,110px);
+    grid-gap:10px;
+    justify-content:center;
+    margin:30px;
+}
+
+.cell{
+    width:110px;
+    height:110px;
+    background:#111;
+    border:3px solid gold;
+    border-radius:10px;
+    font-size:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 10px gold inset;
+    transition:transform 0.2s;
+}
+
+.spin{
+    animation:spin 0.3s infinite;
+}
+
+@keyframes spin{
+    0%{transform:scale(1) rotate(0deg);}
+    50%{transform:scale(1.2) rotate(10deg);}
+    100%{transform:scale(1) rotate(-10deg);}
+}
+
+button{
+    padding:15px 40px;
+    font-size:20px;
+    background:linear-gradient(gold,orange);
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:0 0 15px gold;
+}
+
+button:hover{
+    transform:scale(1.1);
+}
+
+.win{
+    animation:winFlash 0.5s infinite;
+}
+
+@keyframes winFlash{
+    0%{box-shadow:0 0 10px gold;}
+    50%{box-shadow:0 0 40px yellow;}
+    100%{box-shadow:0 0 10px gold;}
+}
+
+#result{
+    font-size:22px;
+    margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🐯 Fortune Tiger Mini</h1>
+
+<div id="credits">Créditos: 100</div>
+
+<div id="slot">
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+</div>
+
+<button onclick="spin()">🎰 SPIN</button>
+
+<div id="result"></div>
+
+<script>
+
+let credits = 100
+
+const symbols = ["🐯","💰","🍀","👑","⭐"]
+
+function spin(){
+
+if(credits < 5){
+alert("Sem créditos")
+return
+}
+
+credits -= 5
+updateCredits()
+
+let cells = document.querySelectorAll(".cell")
+
+cells.forEach(c=>{
+c.classList.add("spin")
+})
+
+setTimeout(()=>{
+
+let results = []
+
+cells.forEach(c=>{
+c.classList.remove("spin")
+let sym = symbols[Math.floor(Math.random()*symbols.length)]
+c.textContent = sym
+results.push(sym)
+})
+
+checkWin(results)
+
+},1000)
+
+}
+
+function checkWin(r){
+
+let cells = document.querySelectorAll(".cell")
+let win = false
+
+if(r[0]==r[1] && r[1]==r[2]) win = true
+if(r[3]==r[4] && r[4]==r[5]) win = true
+if(r[6]==r[7] && r[7]==r[8]) win = true
+
+cells.forEach(c=>c.classList.remove("win"))
+
+if(win){
+
+credits += 25
+updateCredits()
+
+cells.forEach(c=>c.classList.add("win"))
+
+document.getElementById("result").innerHTML="🎉 GRANDE PRÊMIO!"
+
+confetti()
+
+}else{
+
+document.getElementById("result").innerHTML="Tente novamente"
+
+}
+
+}
+
+function updateCredits(){
+document.getElementById("credits").innerText="Créditos: "+credits
+}
+
+function confetti(){
+
+for(let i=0;i<40;i++){
+
+let div=document.createElement("div")
+
+div.style.position="fixed"
+div.style.left=Math.random()*100+"%"
+div.style.top="-10px"
+div.style.fontSize="20px"
+div.innerHTML="✨"
+
+document.body.appendChild(div)
+
+let fall=setInterval(()=>{
+
+div.style.top=parseInt(div.style.top)+5+"px"
+
+if(parseInt(div.style.top)>window.innerHeight){
+
+clearInterval(fall)
+div.remove()
+
+}
+
+},30)
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
