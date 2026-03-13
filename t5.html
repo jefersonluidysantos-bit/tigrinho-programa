@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Fortune Tiger Demo Avançado</title>
+
+<style>
+body{
+  background:#0b0b0b;
+  font-family:Arial;
+  text-align:center;
+  color:white;
+  overflow:hidden;
+}
+
+h1{
+  color:gold;
+  text-shadow:0 0 20px gold;
+}
+
+/* Layout */
+.game-container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:60px;
+  margin-top:40px;
+}
+
+/* Tigres laterais */
+.tiger{
+  font-size:120px;
+  animation:float 2s infinite ease-in-out;
+  filter:drop-shadow(0 0 15px orange);
+  transition: all 0.3s;
+}
+.tiger.win{
+  transform:scale(1.3);
+  filter:drop-shadow(0 0 40px yellow);
+}
+
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-20px)}
+  100%{transform:translateY(0)}
+}
+
+/* Slot */
+#slot{
+  display:grid;
+  grid-template-columns:repeat(3,110px);
+  gap:10px;
+}
+
+.cell{
+  width:110px;
+  height:110px;
+  background:#1a1a1a;
+  border:3px solid gold;
+  border-radius:10px;
+  font-size:55px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 10px gold inset;
+  transition:0.2s;
+}
+.cell.win{
+  animation:cellGlow 0.5s infinite alternate;
+}
+
+@keyframes cellGlow{
+  0%{box-shadow:0 0 20px gold inset, 0 0 20px yellow;}
+  100%{box-shadow:0 0 40px gold inset, 0 0 60px yellow;}
+}
+
+/* Botão */
+button{
+  padding:12px 25px;
+  font-size:18px;
+  background:gold;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin:10px;
+}
+button:hover{
+  background:orange;
+}
+
+/* Painel */
+.panel{
+  margin:10px;
+  font-size:20px;
+}
+
+/* Raios animados */
+.lightning{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  background:linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+  mix-blend-mode:screen;
+  animation:flash 0.15s linear forwards;
+}
+@keyframes flash{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+
+/* Tela tremendo */
+.shake{
+  animation:shake 0.5s;
+}
+@keyframes shake{
+  0%{transform:translate(0)}
+  10%{transform:translate(-5px,-5px)}
+  20%{transform:translate(5px,5px)}
+  30%{transform:translate(-5px,5px)}
+  40%{transform:translate(5px,-5px)}
+  50%{transform:translate(-3px,3px)}
+  60%{transform:translate(3px,-3px)}
+  70%{transform:translate(-2px,2px)}
+  80%{transform:translate(2px,-2px)}
+  90%{transform:translate(0)}
+  100%{transform:translate(0)}
+}
+
+/* Partículas flutuantes */
+.particle{
+  position:fixed;
+  font-size:18px;
+  pointer-events:none;
+  opacity:0.8;
+  animation:particleMove 2s linear forwards;
+}
+
+@keyframes particleMove{
+  to{
+    transform:translateY(-100px) translateX(50px);
+    opacity:0;
+  }
+}
+
+/* Moedas caindo */
+.coin{
+  position:fixed;
+  font-size:22px;
+  top:-20px;
+  animation:fall 3s linear forwards;
+}
+@keyframes fall{
+  to{
+    transform:translateY(110vh);
+    opacity:0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🐯 Fortune Tiger Demo Avançado</h1>
+
+<div class="panel">Saldo: R$ <span id="saldo">1000</span></div>
+
+<div class="panel">
+Aposta
+<button onclick="betDown()">-</button>
+<span id="bet">10</span>
+<button onclick="betUp()">+</button>
+</div>
+
+<div class="game-container">
+  <div class="tiger" id="tigerL">🐯</div>
+
+  <div id="slot">
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+  </div>
+
+  <div class="tiger" id="tigerR">🐯</div>
+</div>
+
+<button onclick="spin()">🎰 GIRAR</button>
+
+<div class="panel" id="msg"></div>
+
+<script>
+let saldo = 1000
+let aposta = 10
+const symbols = ["🐯","💰","🍀","👑","⭐"]
+
+const saldoEl = document.getElementById("saldo")
+const betEl = document.getElementById("bet")
+const tigerL = document.getElementById("tigerL")
+const tigerR = document.getElementById("tigerR")
+
+function atualizar(){
+  saldoEl.innerText = saldo
+  betEl.innerText = aposta
+}
+
+function betUp(){ aposta+=5; atualizar() }
+function betDown(){ if(aposta>5) aposta-=5; atualizar() }
+
+function spin(){
+  if(saldo<aposta){ alert("Saldo insuficiente"); return }
+  saldo -= aposta
+
+  let cells = document.querySelectorAll(".cell")
+  let results = []
+
+  cells.forEach(c=>{
+    let sym = symbols[Math.floor(Math.random()*symbols.length)]
+    c.textContent = sym
+    c.classList.remove("win")
+    results.push(sym)
+  })
+
+  checkWin(results)
+  atualizar()
+}
+
+function checkWin(r){
+  let ganhou=false
+  if(r[0]==r[1] && r[1]==r[2]) ganhou=true
+  if(r[3]==r[4] && r[4]==r[5]) ganhou=true
+  if(r[6]==r[7] && r[7]==r[8]) ganhou=true
+
+  if(ganhou){
+    let premio = aposta*5
+    saldo += premio
+    document.getElementById("msg").innerHTML = "⚡ JACKPOT R$ "+premio
+
+    // Células vencedoras
+    document.querySelectorAll(".cell").forEach(c=>c.classList.add("win"))
+
+    // Tigres reagindo
+    tigerL.classList.add("win")
+    tigerR.classList.add("win")
+    setTimeout(()=>{
+      tigerL.classList.remove("win")
+      tigerR.classList.remove("win")
+    },1000)
+
+    efeitos()
+  } else {
+    document.getElementById("msg").innerHTML = "❌ Não ganhou"
+  }
+}
+
+function efeitos(){
+  // Raios animados
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      let flash = document.createElement("div")
+      flash.className = "lightning"
+      document.body.appendChild(flash)
+      setTimeout(()=>flash.remove(),200)
+    }, i*150)
+  }
+
+  // Tela tremendo
+  document.body.classList.add("shake")
+  setTimeout(()=>document.body.classList.remove("shake"),500)
+
+  // Partículas brilhantes
+  for(let i=0;i<30;i++){
+    let part = document.createElement("div")
+    part.className="particle"
+    part.style.left = Math.random()*100 + "vw"
+    part.style.top = Math.random()*50 + "vh"
+    part.innerHTML = "✨"
+    document.body.appendChild(part)
+    setTimeout(()=>part.remove(),2000)
+  }
+
+  // Moedas caindo
+  for(let i=0;i<40;i++){
+    let coin=document.createElement("div")
+    coin.className="coin"
+    coin.innerHTML="💰"
+    coin.style.left=Math.random()*100+"vw"
+    document.body.appendChild(coin)
+    setTimeout(()=>coin.remove(),3000)
+  }
+}
+
+atualizar()
+</script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Fortune Tiger Demo</title>
+
+<style>
+
+body{
+background:#0b0b0b;
+font-family:Arial;
+text-align:center;
+color:white;
+}
+
+h1{
+color:gold;
+text-shadow:0 0 10px gold;
+}
+
+#slot{
+display:grid;
+grid-template-columns:repeat(3,110px);
+gap:10px;
+justify-content:center;
+margin:30px;
+}
+
+.cell{
+width:110px;
+height:110px;
+background:#1a1a1a;
+border:3px solid gold;
+border-radius:10px;
+font-size:55px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 0 10px gold inset;
+}
+
+button{
+padding:12px 25px;
+font-size:18px;
+background:gold;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+}
+
+button:hover{
+background:orange;
+}
+
+.panel{
+margin:10px;
+font-size:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🐯 Fortune Tiger Demo</h1>
+
+<div class="panel">Saldo: R$ <span id="saldo">1000</span></div>
+
+<div class="panel">
+Aposta: 
+<button onclick="betDown()">-</button>
+<span id="bet">10</span>
+<button onclick="betUp()">+</button>
+</div>
+
+<div id="slot">
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+<div class="cell"></div>
+</div>
+
+<button onclick="spin()">🎰 GIRAR</button>
+
+<div class="panel" id="msg"></div>
+
+<script>
+
+let saldo = 1000
+let aposta = 10
+
+const symbols = ["🐯","💰","🍀","👑","⭐"]
+
+function atualizar(){
+document.getElementById("saldo").innerText = saldo
+document.getElementById("bet").innerText = aposta
+}
+
+function betUp(){
+aposta += 5
+atualizar()
+}
+
+function betDown(){
+if(aposta > 5){
+aposta -= 5
+}
+atualizar()
+}
+
+function spin(){
+
+if(saldo < aposta){
+alert("Saldo insuficiente")
+return
+}
+
+saldo -= aposta
+
+let cells = document.querySelectorAll(".cell")
+let results = []
+
+cells.forEach(c=>{
+
+let sym = symbols[Math.floor(Math.random()*symbols.length)]
+c.textContent = sym
+results.push(sym)
+
+})
+
+checkWin(results)
+
+atualizar()
+
+}
+
+function checkWin(r){
+
+let ganhou = false
+
+if(r[0]==r[1] && r[1]==r[2]) ganhou=true
+if(r[3]==r[4] && r[4]==r[5]) ganhou=true
+if(r[6]==r[7] && r[7]==r[8]) ganhou=true
+
+if(ganhou){
+
+let premio = aposta * 5
+saldo += premio
+
+document.getElementById("msg").innerHTML =
+"🎉 Você ganhou R$ "+premio
+
+}else{
+
+document.getElementById("msg").innerHTML =
+"❌ Não ganhou"
+
+}
+
+}
+
+atualizar()
+
+</script>
+
+</body>
+</html>
