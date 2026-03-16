@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>🐯 FORTUNE TIGER 3D SLOT - MODO ULTRA ÉPICO</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    body {
+        background: #0a0a0a;
+        font-family: 'Press Start 2P', cursive;
+        text-align: center;
+        color: #ffd700;
+        overflow: hidden;
+        margin: 0;
+        position: relative;
+        transition: background 1.5s;
+    }
+
+    body.win-mode {
+        background: linear-gradient(45deg, #ff4500, #ffd700, #ff4500, #ffaa00);
+        animation: winPulse 2.8s infinite alternate;
+    }
+    @keyframes winPulse {
+        0%   { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: 
+            radial-gradient(circle at 30% 20%, rgba(255,215,0,0.15) 0%, transparent 60%),
+            radial-gradient(circle at 70% 80%, rgba(255,100,0,0.15) 0%, transparent 60%),
+            linear-gradient(45deg, #001a00 0%, #0a0a0a 100%);
+        z-index: -10;
+        animation: junglePulse 15s infinite alternate ease-in-out;
+    }
+    @keyframes junglePulse {
+        0% { opacity: 0.6; }
+        100% { opacity: 0.9; }
+    }
+
+    .decor-tiger {
+        position: fixed;
+        font-size: 75px;
+        opacity: 0.25;
+        z-index: -5;
+        pointer-events: none;
+        filter: drop-shadow(0 0 25px gold);
+        animation: decorFloat 14s infinite ease-in-out;
+    }
+    .decor-tiger:nth-child(odd) { animation-duration: 18s; animation-direction: alternate-reverse; }
+    @keyframes decorFloat {
+        0%   { transform: translateY(0) rotate(-8deg); }
+        50%  { transform: translateY(-80px) rotate(8deg); }
+        100% { transform: translateY(0) rotate(-8deg); }
+    }
+
+    .leaf {
+        position: fixed;
+        font-size: 28px;
+        z-index: -6;
+        opacity: 0.6;
+        pointer-events: none;
+        animation: leafFall linear forwards;
+    }
+    @keyframes leafFall {
+        to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    h1 {
+        font-size: 42px;
+        margin: 15px 0 5px;
+        text-shadow: 0 0 15px gold, 0 0 30px #ff4500, 0 0 50px #ff0000;
+        animation: titleGlow 2s infinite alternate;
+        letter-spacing: 4px;
+    }
+    @keyframes titleGlow {
+        from { text-shadow: 0 0 15px gold, 0 0 30px #ff4500; }
+        to   { text-shadow: 0 0 35px gold, 0 0 70px #ff0000, 0 0 90px #ffd700; }
+    }
+
+    .game-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 70px;
+        margin: 20px auto;
+        perspective: 1200px;
+    }
+
+    .tiger {
+        font-size: 140px;
+        transform-style: preserve-3d;
+        animation: float3D 2.2s infinite ease-in-out;
+        filter: drop-shadow(0 0 30px #ff4500);
+    }
+    .tiger::after {
+        content: "🐯";
+        display: block;
+        animation: blink 2.8s infinite;
+    }
+    @keyframes float3D {
+        0%   { transform: rotateY(-15deg) translateY(0); }
+        50%  { transform: rotateY(15deg) translateY(-35px); }
+        100% { transform: rotateY(-15deg) translateY(0); }
+    }
+    @keyframes blink {
+        0%,92%,100% { opacity: 1; }
+        94%,97%     { opacity: 0; }
+    }
+    .tiger.win {
+        animation: tigerSuperWin 0.4s infinite alternate !important;
+    }
+    @keyframes tigerSuperWin {
+        0%   { transform: scale(1) rotateY(-15deg); filter: brightness(1.8) hue-rotate(30deg); }
+        100% { transform: scale(1.25) rotateY(15deg); filter: brightness(2.5) hue-rotate(-30deg); }
+    }
+
+    #slot {
+        display: grid;
+        grid-template-columns: repeat(3, 120px);
+        gap: 14px;
+        padding: 15px;
+        background: rgba(0,0,0,0.7);
+        border: 8px solid #ffd700;
+        border-radius: 20px;
+        box-shadow: 0 0 40px gold inset, 0 0 80px #ff4500;
+    }
+
+    .cell {
+        width: 120px;
+        height: 120px;
+        background: #1a1a1a;
+        border: 5px solid #ffd700;
+        border-radius: 15px;
+        font-size: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px gold inset;
+        transition: all 0.3s;
+    }
+    .cell.win {
+        animation: cellGlow 0.4s infinite alternate;
+        transform: scale(1.15);
+    }
+    .cell.explode {
+        animation: cellExplode 1.1s forwards;
+    }
+    @keyframes cellExplode {
+        0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+        50%  { transform: scale(3.5) rotate(900deg); opacity: 0.8; }
+        100% { transform: scale(0) rotate(1800deg); opacity: 0; }
+    }
+    @keyframes cellGlow {
+        0%   { box-shadow: 0 0 30px gold, 0 0 60px #ff0; }
+        100% { box-shadow: 0 0 70px gold, 0 0 120px #ff4500; }
+    }
+
+    .panel {
+        background: rgba(20,20,20,0.85);
+        padding: 12px 25px;
+        margin: 12px auto;
+        border-radius: 12px;
+        border: 3px solid gold;
+        display: inline-block;
+        box-shadow: 0 0 25px rgba(255,215,0,0.6);
+    }
+    #saldo { color: #00ff00; font-size: 24px; text-shadow: 0 0 15px lime; }
+
+    button {
+        padding: 14px 28px;
+        font-size: 18px;
+        background: linear-gradient(#ffd700, #ffaa00);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 0 20px gold;
+        text-shadow: 0 0 8px black;
+    }
+    button:hover { transform: scale(1.12) rotate(3deg); box-shadow: 0 0 45px #ff4500; }
+    button:active { transform: scale(0.95); }
+
+    #spinBtn {
+        font-size: 22px;
+        padding: 18px 50px;
+        background: linear-gradient(#ff4500, #ffd700);
+        animation: spinPulse 1.5s infinite alternate;
+    }
+    @keyframes spinPulse {
+        from { box-shadow: 0 0 20px #ff0; }
+        to   { box-shadow: 0 0 60px #ff4500, 0 0 90px #ff0; }
+    }
+
+    #msg {
+        font-size: 28px;
+        min-height: 80px;
+        margin: 20px;
+        text-shadow: 0 0 20px gold;
+    }
+
+    .particle {
+        position: fixed;
+        font-size: 22px;
+        pointer-events: none;
+        z-index: 999;
+        animation: particleMove 1.8s linear forwards;
+        text-shadow: 0 0 10px gold;
+    }
+    .particle.tiger { font-size: 32px; }
+    @keyframes particleMove {
+        to { transform: translateY(-220px) translateX(80px) rotate(360deg); opacity: 0; }
+    }
+
+    .coin {
+        position: fixed;
+        font-size: 34px;
+        z-index: 998;
+        animation: coinRain 3.8s linear forwards;
+    }
+    @keyframes coinRain {
+        0%   { transform: translateY(-80px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(140vh) rotate(2880deg); opacity: 0; }
+    }
+
+    .lightning {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255,255,255,0.95), transparent 50%);
+        pointer-events: none;
+        z-index: 1000;
+        animation: flash 0.2s linear forwards;
+    }
+    @keyframes flash { 0%{opacity:1} 100%{opacity:0} }
+
+    .shake { animation: shake 0.8s; }
+    @keyframes shake {
+        0%,100%{transform:translate(0)}
+        10%{transform:translate(-10px,-10px)}
+        20%{transform:translate(10px,10px)}
+        30%{transform:translate(-10px,10px)}
+        40%{transform:translate(10px,-10px)}
+        50%{transform:translate(-6px,6px)}
+        60%{transform:translate(6px,-6px)}
+        70%{transform:translate(-5px,5px)}
+        80%{transform:translate(5px,-5px)}
+    }
+
+    #jackpot-banner {
+        position: fixed;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg, #ff0000, #ffd700, #ff0000);
+        padding: 8px 30px;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        box-shadow: 0 0 30px #ff0;
+        animation: jackpotBanner 3s infinite;
+        z-index: 9999;
+    }
+    @keyframes jackpotBanner {
+        0%,100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.08); }
+    }
+
+    #mega-win {
+        position: fixed;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0;
+        color: #fff;
+        -webkit-text-stroke: 4px #ff4500;
+        text-shadow: 0 0 50px #ff0, 0 0 100px #f00, 0 0 150px #ffa500;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        white-space: nowrap;
+    }
+    #mega-win.active {
+        font-size: 120px;
+        opacity: 1;
+        animation: megaWinPop 4.5s forwards;
+    }
+    @keyframes megaWinPop {
+        0%   { transform: translate(-50%, -50%) scale(0.1) rotate(-15deg); opacity: 0; }
+        15%  { transform: translate(-50%, -50%) scale(1.5) rotate(8deg); opacity: 1; }
+        50%  { transform: translate(-50%, -50%) scale(1.05) rotate(-4deg); }
+        100% { transform: translate(-50%, -50%) scale(1.3) rotate(0deg); opacity: 0.3; }
+    }
+
+    .confetti {
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        z-index: 9998;
+        pointer-events: none;
+        animation: confettiRain 4s linear forwards;
+    }
+    @keyframes confettiRain {
+        to {
+            transform: translateY(150vh) rotate(2880deg) translateX(100px);
+            opacity: 0;
+        }
+    }
+
+    .tiger-burst {
+        position: fixed;
+        font-size: 110px;
+        z-index: 9997;
+        pointer-events: none;
+        animation: tigerBurst 2.5s ease-out forwards;
+    }
+    @keyframes tigerBurst {
+        0%   { transform: scale(0.1) rotate(0deg); opacity: 1; }
+        40%  { transform: scale(3) rotate(540deg); opacity: 1; }
+        100% { transform: scale(0) rotate(1440deg); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<div id="jackpot-banner">🐯 JACKPOT PROGRESSIVO ATIVADO - ATÉ ×50! 🔥</div>
+
+<h1>🐯 FORTUNE TIGER 3D ULTRA</h1>
+
+<div class="panel">Saldo: R$ <span id="saldo">100000</span></div>
+
+<div class="panel">
+    Aposta
+    <button onclick="betDown()">−</button>
+    <span id="bet">20</span>
+    <button onclick="betUp()">+</button>
+    <button onclick="maxBet()">MAX</button>
+</div>
+
+<div class="panel">
+    <button id="spinBtn">🎰 GIRAR AGORA!</button>
+    <button id="autoBtn">⏯ AUTO</button>
+    <button id="turboBtn">⚡ TURBO</button>
+</div>
+
+<div class="game-container">
+    <div class="tiger" id="tigerL"></div>
+    <div id="slot">
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+    <div class="tiger" id="tigerR"></div>
+</div>
+
+<div id="msg" style="font-size:32px; color:#ff0;">Pronto para o tigre?</div>
+
+<!-- Tigres decorativos -->
+<div class="decor-tiger" style="top:12%; left:5%; animation-delay:0s;">🐯</div>
+<div class="decor-tiger" style="top:18%; right:6%; animation-delay:2s;">🐯</div>
+<div class="decor-tiger" style="bottom:15%; left:8%; animation-delay:4s;">🐯</div>
+<div class="decor-tiger" style="bottom:22%; right:7%; animation-delay:6s;">🐯</div>
+<div class="decor-tiger" style="top:45%; left:3%; animation-delay:1.5s; font-size:55px;">🐯</div>
+<div class="decor-tiger" style="top:55%; right:4%; animation-delay:3.5s; font-size:55px;">🐯</div>
+<div class="decor-tiger" style="bottom:35%; left:12%; animation-delay:5s; font-size:48px;">🐯</div>
+<div class="decor-tiger" style="top:8%; right:12%; animation-delay:7s; font-size:65px;">🐯</div>
+
+<script>
+let saldo = 100000;
+let aposta = 20;
+let turbo = false;
+let autoSpin = false;
+let autoInterval = null;
+
+const symbols = ["🐯","💰","🍀","👑","⭐"];
+const multipliers = { "🐯": 12, "💰": 7, "🍀": 5, "👑": 8, "⭐": 4 };
+
+const saldoEl = document.getElementById("saldo");
+const betEl = document.getElementById("bet");
+const msgEl = document.getElementById("msg");
+const tigerL = document.getElementById("tigerL");
+const tigerR = document.getElementById("tigerR");
+const spinBtn = document.getElementById("spinBtn");
+const autoBtn = document.getElementById("autoBtn");
+const turboBtn = document.getElementById("turboBtn");
+const cells = document.querySelectorAll(".cell");
+
+function atualizar() {
+    saldoEl.innerText = saldo.toLocaleString('pt-BR');
+    betEl.innerText = aposta;
+}
+
+function betUp() { if(aposta < 500) aposta += 10; atualizar(); }
+function betDown() { if(aposta > 10) aposta -= 10; atualizar(); }
+function maxBet() { aposta = 500; atualizar(); }
+
+turboBtn.addEventListener("click", () => {
+    turbo = !turbo;
+    turboBtn.style.background = turbo ? "#ff4500" : "linear-gradient(#ffd700, #ffaa00)";
+    turboBtn.innerText = turbo ? "⚡ TURBO ON" : "⚡ TURBO";
+});
+
+autoBtn.addEventListener("click", () => {
+    autoSpin = !autoSpin;
+    autoBtn.style.background = autoSpin ? "#ff4500" : "linear-gradient(#ffd700, #ffaa00)";
+    if (autoSpin) {
+        autoInterval = setInterval(() => {
+            if (saldo >= aposta) spin();
+            else stopAuto();
+        }, turbo ? 350 : 750);
+    } else stopAuto();
+});
+function stopAuto() {
+    clearInterval(autoInterval);
+    autoSpin = false;
+    autoBtn.style.background = "linear-gradient(#ffd700, #ffaa00)";
+}
+
+function createLeaf() {
+    const leaf = document.createElement("div");
+    leaf.className = "leaf";
+    leaf.innerHTML = Math.random() > 0.5 ? "🍃" : "🌿";
+    leaf.style.left = Math.random() * 100 + "vw";
+    leaf.style.top = "-30px";
+    leaf.style.animationDuration = (Math.random() * 8 + 9) + "s";
+    document.body.appendChild(leaf);
+    setTimeout(() => leaf.remove(), 18000);
+}
+setInterval(() => { if (Math.random() > 0.4) createLeaf(); }, 220);
+
+function backgroundParticles() {
+    for (let i = 0; i < 3; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.top = Math.random() * 70 + "vh";
+        p.innerHTML = "✨";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 2500);
+    }
+}
+setInterval(backgroundParticles, 800);
+
+function spin() {
+    if (saldo < aposta) {
+        msgEl.innerHTML = "💸 SALDO INSUFICIENTE!";
+        msgEl.style.color = "#ff0000";
+        setTimeout(() => { msgEl.style.color = "#ff0"; }, 1500);
+        return;
+    }
+
+    spinBtn.style.transform = "scale(1.3) rotate(12deg)";
+    setTimeout(() => spinBtn.style.transform = "", 180);
+
+    saldo -= aposta;
+    atualizar();
+
+    const steps = turbo ? 9 : 16;
+    cells.forEach((c, i) => {
+        let count = 0;
+        const int = setInterval(() => {
+            c.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            c.style.transform = `rotateX(${count * 45}deg) scale(1.1)`;
+            count++;
+            if (count > steps) {
+                clearInterval(int);
+                c.style.transform = "";
+            }
+        }, turbo ? 22 : 32);
+    });
+
+    for (let i = 0; i < 35; i++) {
+        let part = document.createElement("div");
+        part.className = "particle";
+        part.style.left = Math.random() * 100 + "vw";
+        part.style.top = "35vh";
+        part.innerHTML = Math.random() > 0.7 ? "🐯" : "✨";
+        if (Math.random() > 0.8) part.classList.add("tiger");
+        document.body.appendChild(part);
+        setTimeout(() => part.remove(), 1600);
+    }
+
+    setTimeout(() => {
+        let results = [];
+        cells.forEach(c => {
+            let sym = symbols[Math.floor(Math.random() * symbols.length)];
+            c.textContent = sym;
+            c.classList.remove("win");
+            results.push(sym);
+        });
+        checkWin(results);
+        atualizar();
+    }, turbo ? 380 : 620);
+}
+
+function checkWin(results) {
+    let premioTotal = 0;
+    let linhas = 0;
+    let tigerLines = 0;
+
+    if (results[0] === results[1] && results[1] === results[2]) {
+        const mult = multipliers[results[0]] || 5;
+        premioTotal += aposta * mult;
+        linhas++;
+        if (results[0] === "🐯") tigerLines++;
+    }
+    if (results[3] === results[4] && results[4] === results[5]) {
+        const mult = multipliers[results[3]] || 5;
+        premioTotal += aposta * mult;
+        linhas++;
+        if (results[3] === "🐯") tigerLines++;
+    }
+    if (results[6] === results[7] && results[7] === results[8]) {
+        const mult = multipliers[results[6]] || 5;
+        premioTotal += aposta * mult;
+        linhas++;
+        if (results[6] === "🐯") tigerLines++;
+    }
+
+    if (premioTotal > 0) {
+        saldo += premioTotal;
+
+        document.body.classList.add("win-mode");
+
+        const megaWin = document.createElement("div");
+        megaWin.id = "mega-win";
+        megaWin.innerHTML = tigerLines >= 2 ? "TIGRE DOURADO PAGOU!!!" : "MEGA WIN!";
+        document.body.appendChild(megaWin);
+        setTimeout(() => megaWin.classList.add("active"), 100);
+
+        cells.forEach((c, i) => {
+            setTimeout(() => c.classList.add("explode"), i * 130);
+        });
+
+        for (let i = 0; i < 220; i++) {
+            const conf = document.createElement("div");
+            conf.className = "confetti";
+            conf.style.left = Math.random() * 100 + "vw";
+            conf.style.top = "-50px";
+            conf.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            conf.style.animationDuration = (2.5 + Math.random() * 3) + "s";
+            conf.style.animationDelay = Math.random() * 1.5 + "s";
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 7000);
+        }
+
+        for (let i = 0; i < 18; i++) {
+            const t = document.createElement("div");
+            t.className = "tiger-burst";
+            t.innerHTML = "🐯";
+            t.style.left = Math.random() * 100 + "vw";
+            t.style.top = Math.random() * 70 + "vh";
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        for (let i = 0; i < 140; i++) {
+            const coin = document.createElement("div");
+            coin.className = "coin";
+            coin.innerHTML = Math.random() > 0.45 ? "💰" : "🐯";
+            coin.style.left = Math.random() * 100 + "vw";
+            coin.style.top = "-80px";
+            coin.style.animationDuration = (2.8 + Math.random() * 2.5) + "s";
+            coin.style.animationDelay = Math.random() * 1.2 + "s";
+            document.body.appendChild(coin);
+            setTimeout(() => coin.remove(), 7000);
+        }
+
+        for (let i = 0; i < 18; i++) {
+            setTimeout(() => {
+                const flash = document.createElement("div");
+                flash.className = "lightning";
+                flash.style.opacity = 0.6 + Math.random() * 0.4;
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 250);
+            }, i * 70);
+        }
+
+        document.body.classList.add("shake");
+        setTimeout(() => document.body.classList.remove("shake"), 1600);
+
+        setTimeout(() => {
+            msgEl.innerHTML = `🐯 GANHOU <br>R$ ${premioTotal.toLocaleString('pt-BR')}!!!`;
+            msgEl.style.color = "#00ff88";
+            msgEl.style.fontSize = "46px";
+        }, 2500);
+
+        if (tigerLines > 0) {
+            setTimeout(() => {
+                msgEl.innerHTML += `<br><span style="color:#ffd700">TIGRE ×${tigerLines * 2}!</span>`;
+            }, 3500);
+        }
+
+        setTimeout(() => {
+            document.body.classList.remove("win-mode");
+            const mega = document.getElementById("mega-win");
+            if (mega) mega.remove();
+            cells.forEach(c => c.classList.remove("explode"));
+            tigerL.classList.remove("win");
+            tigerR.classList.remove("win");
+            msgEl.style.fontSize = "32px";
+            msgEl.style.color = "#ff0";
+            msgEl.innerHTML = "Boa sorte na próxima! 🐯";
+        }, 6500);
+
+    } else {
+        msgEl.innerHTML = "😿 Quase... o tigre fugiu!";
+        msgEl.style.color = "#ff9900";
+        setTimeout(() => {
+            msgEl.style.color = "#ff0";
+            msgEl.innerHTML = "Tenta de novo! 🐯";
+        }, 2000);
+    }
+}
+
+atualizar();
+spinBtn.addEventListener("click", spin);
+
+setTimeout(() => {
+    msgEl.innerHTML = "🐯 CLIQUE EM GIRAR E BOA SORTE!";
+}, 1200);
+</script>
+
+</body>
+</html>
